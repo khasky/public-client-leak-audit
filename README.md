@@ -72,4 +72,4 @@ Defensive by design: it reduces a client's public attack surface and hardens it.
 
 ## License
 
-Add a license of your choice when you create the repository (e.g. MIT or Apache-2.0).
+MIT — see [LICENSE](LICENSE).
