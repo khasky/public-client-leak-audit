@@ -1,8 +1,8 @@
-# public-client-leak-audit
+# Public Client Leak Audit
 
-A [Claude](https://claude.com/claude-code) **agent skill** for auditing a public-facing client so its public surface stays *self-contained* — revealing the calls it makes and the data it exchanges, but nothing about how the backend works.
+A Claude agent skill for auditing a public-facing client so its public surface stays _self-contained_ — revealing the calls it makes and the data it exchanges, but nothing about how the backend works.
 
-Any client that ships to users **and** talks to a private backend — a browser extension, a mobile or desktop app, a single-page web app, a CLI, an SDK, an open-sourced client — inevitably exposes its own source. The risk is everything *beyond* the unavoidable: comments explaining server logic, disclosed rate limits and anti-abuse mechanics, backend tech-stack and infra names, private repo paths, test scaffolding that documents server behavior, and secrets sitting one bundle-step from publication. Each of those is free reconnaissance for an attacker and a lever for abuse.
+Any client that ships to users and talks to a private backend — a browser extension, a mobile or desktop app, a single-page web app, a CLI, an SDK, an open-sourced client — inevitably exposes its own source. The risk is everything _beyond_ the unavoidable: comments explaining server logic, disclosed rate limits and anti-abuse mechanics, backend tech-stack and infra names, private repo paths, test scaffolding that documents server behavior, and secrets sitting one bundle-step from publication. Each of those is free reconnaissance for an attacker and a lever for abuse.
 
 This skill turns a real audit into a repeatable method: **scope the public/private boundary → sweep for leaks → harden the client → remediate → verify → report.**
 
@@ -10,7 +10,7 @@ This skill turns a real audit into a repeatable method: **scope the public/priva
 
 - **Disclosure leaks** — private repo/paths, backend stack & infra identifiers, anti-abuse/rate-limit/quota mechanics, auth & account internals, secrets (in-tree and one-step-from-publication), test/e2e code that encodes backend behavior, server-explaining comments, dead code hardcoding server policy, and docs/commit messages describing backend architecture.
 - **Client-side hardening** — permission/scope minimization, IPC/message sender & origin validation, auth-token storage and egress, DOM/XSS sinks, network-layer origin pinning, build-time config gating (so a production build can't be repointed or bundle a secret), source-bundle hygiene, remote-config/code validation, and a supply-chain quick pass.
-- **API over-disclosure** — separating *necessary-minimum* (endpoints, payload shapes, `status → UI` mappings) from *over-disclosure* (server-side processing, limits the client doesn't need, endpoints it never calls).
+- **API over-disclosure** — separating _necessary-minimum_ (endpoints, payload shapes, `status → UI` mappings) from _over-disclosure_ (server-side processing, limits the client doesn't need, endpoints it never calls).
 
 ## The core idea
 
@@ -18,7 +18,7 @@ This skill turns a real audit into a repeatable method: **scope the public/priva
 
 And the **rewrite rule** it applies to comments, strings, and docs:
 
-> Client code may state the *contract* (what input produces what observable result). It must not explain *what or why the server does* it.
+> Client code may state the _contract_ (what input produces what observable result). It must not explain _what or why the server does_ it.
 
 ## Files
 
