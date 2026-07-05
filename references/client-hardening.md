@@ -14,14 +14,14 @@ For every message/RPC/postMessage handler that reaches a privileged action (auth
 - **Validate the sender.** Reject messages whose sender isn't your own code. For browser extensions: check `sender.id === runtime.id`; for MAIN-world ↔ isolated-world bridges, check `event.origin` and `event.source`.
 - **Gate by origin, not by transport.** A privileged action should be callable only from your own trusted pages, checked by the sender's **origin** (e.g. `sender.url` starts with your extension/app origin), not by whether it came from a tab — your own privileged pages often run *in* tabs, and a compromised content script also has a tab. Distinguish "content-script/untrusted context" from "own privileged page" explicitly.
 - **Schema-validate every payload** before dispatch: allowed message types, field types, length/range caps, URL scheme (`https:` only), enum membership. Parse, don't trust.
-- **Least-authority responses.** Don't return more than the caller needs (e.g. return an `authed` boolean to a content script, not the account email).
+- **Least-authority responses:** don't return more than the caller needs (e.g. return an `authed` boolean to a content script, not the account email).
 
 ## 3. Auth token handling
 
-- **Storage.** Prefer a store not readable by untrusted contexts. In extensions, `storage.local` is readable by every context including content scripts on third-party hosts; `storage.session` with a trusted-contexts access level removes that (at the cost of persistence — a conscious tradeoff). Never persist tokens in a place page JS can read.
-- **Egress.** The token must attach *only* to requests to your API origin — a compile-time `https://` constant, never a page-influenced URL, never an `http://` fallback. Grep every `Authorization`/bearer attach site and confirm the URL is fixed.
-- **Lifecycle.** Clear the token on `401`, sign-out, account deletion, and fresh install. Check no second copy lingers (retry markers, pending-deletion state) after clear.
-- **Logging.** Redact `authorization`/`token`/`email`/`code` from any debug logging, and gate debug logging to unpacked/dev builds.
+- **Storage:** prefer a store not readable by untrusted contexts. In extensions, `storage.local` is readable by every context including content scripts on third-party hosts; `storage.session` with a trusted-contexts access level removes that (at the cost of persistence — a conscious tradeoff). Never persist tokens in a place page JS can read.
+- **Egress:** the token must attach *only* to requests to your API origin — a compile-time `https://` constant, never a page-influenced URL, never an `http://` fallback. Grep every `Authorization`/bearer attach site and confirm the URL is fixed.
+- **Lifecycle:** clear the token on `401`, sign-out, account deletion, and fresh install. Check no second copy lingers (retry markers, pending-deletion state) after clear.
+- **Logging:** redact `authorization`/`token`/`email`/`code` from any debug logging, and gate debug logging to unpacked/dev builds.
 
 ## 4. DOM injection / XSS
 
@@ -37,9 +37,9 @@ For every message/RPC/postMessage handler that reaches a privileged action (auth
 
 ## 6. Build-time configuration hygiene
 
-- **Backend-override gating.** If the build honors `VITE_API_BASE`/`API_URL`/env overrides, ensure a **production** build can't be silently repointed to an arbitrary origin. Resolve the override at build time and, in production mode, accept only known-good values (e.g. the staging base an e2e build needs); reject others so they never reach the artifact — including the manifest/host permission and the bundled string. (A pure runtime check can still leave the rejected string inlined by the bundler; do it at the `define`/build layer.)
+- **Backend-override gating:** if the build honors `VITE_API_BASE`/`API_URL`/env overrides, ensure a **production** build can't be silently repointed to an arbitrary origin. Resolve the override at build time and, in production mode, accept only known-good values (e.g. the staging base an e2e build needs); reject others so they never reach the artifact — including the manifest/host permission and the bundled string. (A pure runtime check can still leave the rejected string inlined by the bundler; do it at the `define`/build layer.)
 - **No secrets or sourcemaps in the shipped artifact.** Build it and grep: no `*.map`, no `sourceMappingURL`, no secret patterns, no `localhost`/`127.0.0.1`, no internal hostnames.
-- **Source bundles.** If you ship "reviewable sources" (store submission, `npm pack`), confirm the exclude list drops `.env`, `.env.*`, and any secret/test-credential file. Build the bundle and grep it — don't trust `.gitignore` to cover the bundler.
+- **Source bundles:** if you ship "reviewable sources" (store submission, `npm pack`), confirm the exclude list drops `.env`, `.env.*`, and any secret/test-credential file. Build the bundle and grep it — don't trust `.gitignore` to cover the bundler.
 - Keep a CI step that fails the build on any of the above (deny-regex over the artifact + a secret scanner like gitleaks).
 
 ## 7. Remote config / remote code
